@@ -62,23 +62,19 @@ describe Pardot::Client do
   end
 
   describe '#base_uri' do
-    context 'without PARDOT_URL' do
-      before do
-        ENV.delete('PARDOT_URL')
-      end
+    context 'production' do
+      let(:client) { Pardot::Client.new nil, nil, nil, 3, 'access_token_value', '0Uv000000000001CAA' }
 
       it 'return default value' do
-        expect(Pardot::Client.base_uri).to eq('https://pi.pardot.com')
+        expect(client.class.base_uri).to eq('https://pi.pardot.com')
       end
     end
 
-    context 'with PARDOT_URL' do
-      before do
-        ENV['PARDOT_URL'] = 'https://pi.demo.pardot.com'
-      end
+    context 'demo' do
+      let(:client) { Pardot::Client.new nil, nil, nil, 3, 'access_token_value', '0Uv000000000001CAA', "demo" }
 
-      it 'return ENV value' do
-        expect(Pardot::Client.base_uri).to eq('https://pi.pardot.com')
+      it 'return value' do
+        expect(client.class.base_uri).to eq('https://pi.demo.pardot.com')
       end
     end
   end

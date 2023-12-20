@@ -1,7 +1,6 @@
 module Pardot
   class Client
     include HTTParty
-    base_uri ENV.fetch('PARDOT_URL', 'https://pi.pardot.com')
     format :xml
 
     include Authentication
@@ -22,9 +21,16 @@ module Pardot
     attr_accessor :email, :password, :user_key, :api_key, :version, :salesforce_access_token, :business_unit_id, :format
 
     # @deprecated Arguments email, password and user_key are deprecated. Use salesforce_access_token with Salesforce OAuth.
-    def initialize(email = nil, password = nil, user_key = nil, version = 3, salesforce_access_token = nil, business_unit_id = nil)
+    def initialize(email = nil, password = nil, user_key = nil, version = 3, salesforce_access_token = nil, business_unit_id = nil, environment="production")
       unless email.nil? || password.nil? || user_key.nil?
         warn '[DEPRECATION] Use of username and password authentication is deprecated in favor of Salesforce OAuth. See https://developer.pardot.com/kb/authentication/ for more information.'
+      end
+
+      case environment
+      when "production"
+        self.class.base_uri 'https://pi.pardot.com'
+      when "demo"
+        self.class.base_uri 'https://pi.demo.pardot.com'
       end
 
       if !salesforce_access_token.nil? && business_unit_id.nil?
